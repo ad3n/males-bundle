@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of JKN
+ * This file is part of Males Bundle
  *
  * (c) Muhamad Surya Iksanudin<surya.kejawen@gmail.com>
  *
@@ -18,21 +18,39 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CrudController extends Controller
 {
+    /**
+     * @var AbstractType
+     **/
     protected $formType;
 
+    /**
+     * @var EntityInterface
+     **/
     protected $entity;
 
+    /**
+     * @var \Ihsan\MalesBundle\Guesser\BundleGuesser
+     **/
     protected $guesser;
 
+    /**
+     * @param ContainerInterface $container
+     * @param AbstractType $formType
+     * @param EntityInterface $entity
+     **/
     public function __construct(ContainerInterface $container, AbstractType $formType, EntityInterface $entity)
     {
         $this->container = $container;
         $this->formType = $formType;
-        $this->formType->setController($this);
         $this->guesser = $this->container->get('males.guesser');
+        $this->guesser->initialize($this);
         $this->entity = $entity;
     }
 
+    /**
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     **/
     public function newAction(Request $request)
     {
         $form = $this->createForm($this->formType, $this->entity);
@@ -55,6 +73,10 @@ class CrudController extends Controller
         ));
     }
 
+    /**
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     **/
     public function indexAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
@@ -75,6 +97,10 @@ class CrudController extends Controller
         );
     }
 
+    /**
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\Response
+     **/
     public function showAction($id)
     {
         $em = $this->getDoctrine()->getManager();
@@ -89,6 +115,10 @@ class CrudController extends Controller
         ));
     }
 
+    /**
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     **/
     public function editAction($id)
     {
         $em = $this->getDoctrine()->getManager();
@@ -120,6 +150,10 @@ class CrudController extends Controller
         ));
     }
 
+    /**
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     **/
     public function deleteAction($id)
     {
         $em = $this->getDoctrine()->getManager();

@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of JKN
+ * This file is part of Males Bundle
  *
  * (c) Muhamad Surya Iksanudin<surya.kejawen@gmail.com>
  *
@@ -10,5 +10,8 @@ namespace Ihsan\MalesBundle\Entity;
 
 interface EntityInterface
 {
+    /**
+     * @return string
+     **/
     public function getName();
 }

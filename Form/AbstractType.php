@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of JKN
+ * This file is part of Males Bundle
  *
  * (c) Muhamad Surya Iksanudin<surya.kejawen@gmail.com>
  *
@@ -8,21 +8,21 @@
  **/
 namespace Ihsan\MalesBundle\Form;
 
-use Ihsan\MalesBundle\Util\BundleGuesser;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Ihsan\MalesBundle\Guesser\BundleGuesserInterface;
 use Symfony\Component\Form\AbstractType as BaseType;
 
 abstract class AbstractType extends BaseType
 {
+    /**
+     * @var BundleGuesserInterface
+     **/
     protected $guesser;
 
-    public function __construct(BundleGuesser $guesser)
+    /**
+     * @param BundleGuesserInterface $guesser
+     **/
+    public function __construct(BundleGuesserInterface $guesser)
     {
         $this->guesser = $guesser;
-    }
-
-    public function setController(Controller $controller)
-    {
-        $this->guesser->inizialize($controller);
     }
 }

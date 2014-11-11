@@ -1,16 +1,16 @@
 <?php
 /**
- * This file is part of JKN
+ * This file is part of Males Bundle
  *
  * (c) Muhamad Surya Iksanudin<surya.kejawen@gmail.com>
  *
  * @author : Muhamad Surya Iksanudin
  **/
-namespace Ihsan\MalesBundle\Util;
+namespace Ihsan\MalesBundle\Guesser;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class BundleGuesser
+class BundleGuesser implements BundleGuesserInterface
 {
     /**
      * @var \ReflectionClass
@@ -31,7 +31,7 @@ class BundleGuesser
      * @param Controller $controller
      * @return $this
      **/
-    public function inizialize(Controller $controller)
+    public function initialize(Controller $controller)
     {
         $this->reflector = new \ReflectionClass($controller);
         $this->namespace = explode('\\', $this->reflector->getNamespaceName());

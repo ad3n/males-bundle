@@ -4,6 +4,6 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="males.guesser" class="Ihsan\MalesBundle\Util\BundleGuesser"></service>
+        <service id="males.guesser" class="Ihsan\MalesBundle\Guesser\BundleGuesser"></service>
     </services>
 </container>
