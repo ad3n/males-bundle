@@ -16,7 +16,7 @@ use Ihsan\MalesBundle\Form\AbstractType;
 use Ihsan\MalesBundle\Entity\EntityInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class CrudController extends Controller
+abstract class CrudController extends Controller
 {
     /**
      * @var AbstractType

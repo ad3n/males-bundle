@@ -15,7 +15,12 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('ihsan_males');
 
-        //@todo tambah config untuk fleksibilitas guesser
+        $rootNode
+            ->children()
+                ->scalarNode('guesser')
+                    ->defaultValue('Ihsan\MalesBundle\Guesser\BundleGuesser')
+                ->end()
+            ->end();
 
         return $treeBuilder;
     }
