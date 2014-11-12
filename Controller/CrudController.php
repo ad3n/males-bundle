@@ -8,13 +8,14 @@
  **/
 namespace Ihsan\MalesBundle\Controller;
 
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Ihsan\MalesBundle\IhsanMalesBundle as Constant;
 use Ihsan\MalesBundle\Form\AbstractType;
 use Ihsan\MalesBundle\Entity\EntityInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Ihsan\MalesBundle\Form\AbstractFormFilter;
 
 abstract class CrudController extends Controller
 {
@@ -22,6 +23,11 @@ abstract class CrudController extends Controller
      * @var AbstractType
      **/
     protected $formType;
+
+    /**
+     * @var AbstractFormFilter
+     **/
+    protected $formFilter;
 
     /**
      * @var EntityInterface
@@ -36,12 +42,14 @@ abstract class CrudController extends Controller
     /**
      * @param ContainerInterface $container
      * @param AbstractType $formType
+     * @param AbstractFormFilter $formFilter
      * @param EntityInterface $entity
      **/
-    public function __construct(ContainerInterface $container, AbstractType $formType, EntityInterface $entity)
+    public function __construct(ContainerInterface $container, AbstractType $formType, AbstractFormFilter $formFilter, EntityInterface $entity)
     {
         $this->container = $container;
         $this->formType = $formType;
+        $this->formFilter = $formFilter;
         $this->guesser = $this->container->get('males.guesser');
         $this->guesser->initialize($this);
         $this->entity = $entity;
@@ -184,10 +192,10 @@ abstract class CrudController extends Controller
         return $entity;
     }
 
-    public function filterAction(Request $request)
+    public function filterAction()
     {
-        if ($request->query->get('mode')) {
-
-        }
+        return $this->render(sprintf('%s:%s:filter.html.twig', $this->guesser->getBundleAlias(), $this->guesser->getIdentity()), array(
+            'form' => $this->createForm($this->formFilter),
+        ));
     }
 }
