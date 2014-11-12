@@ -83,9 +83,19 @@ abstract class CrudController extends Controller
         $repo = $em->getRepository($this->guesser->getEntityAlias());
 
         $qb = $repo->createQueryBuilder('o')->select('o')->addOrderBy('o.id', 'DESC');
-        $page = $request->query->get('page', 1);
 
-        $paginator  = $this->get('knp_paginator');
+        if ($request->query->get('filter') && 'basic' === $request->query->get('mode')) {
+            $qb->andWhere(sprintf('o.%s LIKE :filter', $this->entity->getFilter()))
+                ->setParameter('filter', strtoupper(strtr('%filter%', array('filter' => $request->query->get('filter')))));
+        }
+
+        if ('advance' === $request->query->get('mode')) {
+
+        }
+
+        $page = $request->query->get('page', 1);
+        $paginator  = $this->container->get('knp_paginator');
+
         $pagination = $paginator->paginate(
             $qb,
             $page,
@@ -103,15 +113,8 @@ abstract class CrudController extends Controller
      **/
     public function showAction($id)
     {
-        $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository($this->guesser->getEntityAlias())->find($id);
-
-        if (! $entity) {
-            throw new NotFoundHttpException($this->get('translator')->trans('message.not_found', array('data' => $id), $this->container->getParameter('bundle')));
-        }
-
         return $this->render(sprintf('%s:%s:show.html.twig', $this->guesser->getBundleAlias(), $this->guesser->getIdentity()), array(
-            'data' => $entity,
+            'data' => $this->existOrNotFoundException($id),
         ));
     }
 
@@ -121,13 +124,7 @@ abstract class CrudController extends Controller
      **/
     public function editAction($id)
     {
-        $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository($this->guesser->getEntityAlias())->find($id);
-
-        if (! $entity) {
-            throw new NotFoundHttpException($this->get('translator')->trans('message.not_found', array('data' => $id), $this->container->getParameter('bundle')));
-        }
-
+        $entity = $this->existOrNotFoundException($id);
         $form = $this->createForm($this->formType, $entity);
         $request = $this->container->get('request');
 
@@ -157,12 +154,7 @@ abstract class CrudController extends Controller
     public function deleteAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository($this->guesser->getEntityAlias())->find($id);
-
-        if (! $entity) {
-            throw new NotFoundHttpException($this->get('translator')->trans('message.not_found', array('data' => $id), $this->container->getParameter('bundle')));
-        }
-
+        $entity = $this->existOrNotFoundException($id);
         $request = $this->container->get('request');
 
         if ($request->isMethod('post')) {
@@ -178,5 +170,24 @@ abstract class CrudController extends Controller
         return $this->render(sprintf('%s:%s:delete.html.twig', $this->guesser->getBundleAlias(), $this->guesser->getIdentity()), array(
             'data' => $entity,
         ));
+    }
+
+    protected function existOrNotFoundException($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $entity = $em->getRepository($this->guesser->getEntityAlias())->find($id);
+
+        if (! $entity) {
+            throw new NotFoundHttpException($this->get('translator')->trans('message.not_found', array('data' => $id), $this->container->getParameter('bundle')));
+        }
+
+        return $entity;
+    }
+
+    public function filterAction(Request $request)
+    {
+        if ($request->query->get('mode')) {
+
+        }
     }
 }

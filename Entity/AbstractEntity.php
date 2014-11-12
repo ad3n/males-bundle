@@ -8,15 +8,10 @@
  **/
 namespace Ihsan\MalesBundle\Entity;
 
-interface EntityInterface
+abstract class AbstractEntity implements EntityInterface
 {
-    /**
-     * @return string
-     **/
-    public function getName();
-
-    /**
-     * @return string
-     **/
-    public function getFilter();
+    public function getFilter()
+    {
+        return 'name';
+    }
 }
