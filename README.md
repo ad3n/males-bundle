@@ -1,3 +1,12 @@
 #Males Bundle
 
-###Males bundle adalah bundle Symfony2 yang bertujuan untuk mempermudah dan mempercepat proses produksi yaitu untuk mempersingkat CRUD
+###Males Bundle provide DRY CRUD
+
+How to install
+
+> php composer require ihsanudin/males-bundle dev-master
+
+
+How to use
+
+> menyusul
