@@ -9,6 +9,6 @@
 namespace Ihsan\MalesBundle\Form;
 
 
-abstract class AbstractFormFilter extends AbstractType
+abstract class AbstractFilter extends AbstractType
 {
 } 

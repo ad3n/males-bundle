@@ -17,12 +17,26 @@ use Ihsan\MalesBundle\Serializer\Serializer;
 
 class ResponseFormatListener
 {
+    /**
+     * @var string
+     **/
     protected $responseFormat;
 
+    /**
+     * @var Session
+     **/
     protected $session;
 
+    /**
+     * @var Serializer
+     **/
     protected $serializer;
 
+    /**
+     * @param ContainerInterface $container
+     * @param Session $session
+     * @param Serializer $serializer
+     **/
     public function __construct(ContainerInterface $container, Session $session, Serializer $serializer)
     {
         $this->responseFormat = $container->getParameter('males.response.type');
@@ -30,6 +44,9 @@ class ResponseFormatListener
         $this->serializer = $serializer;
     }
 
+    /**
+     * @param FilterResponseEvent $event
+     **/
     public function onKernelResponse(FilterResponseEvent $event)
     {
         if ('html' === $this->responseFormat) {
@@ -41,6 +58,9 @@ class ResponseFormatListener
         $event->getResponse()->setContent($this->serializer->serialize($message, array(), $this->responseFormat));
     }
 
+    /**
+     * @param GetResponseForExceptionEvent $event
+     **/
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         if ('html' === $this->responseFormat) {

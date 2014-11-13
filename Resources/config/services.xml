@@ -14,5 +14,8 @@
             <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException" />
             <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse" />
         </service>
+        <service id="males.twig.bold_keyword" class="Ihsan\MalesBundle\Twig\BoldKeywordFilter">
+            <tag name="twig.extension"/>
+        </service>
     </services>
 </container>

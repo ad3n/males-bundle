@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Ihsan\MalesBundle\IhsanMalesBundle as Constant;
 use Ihsan\MalesBundle\Form\AbstractType;
 use Ihsan\MalesBundle\Entity\EntityInterface;
-use Ihsan\MalesBundle\Form\AbstractFormFilter;
+use Ihsan\MalesBundle\Form\AbstractFilter;
 
 abstract class CrudController extends Controller
 {
@@ -25,7 +25,7 @@ abstract class CrudController extends Controller
     protected $formType;
 
     /**
-     * @var AbstractFormFilter
+     * @var AbstractFilter
      **/
     protected $formFilter;
 
@@ -42,10 +42,10 @@ abstract class CrudController extends Controller
     /**
      * @param ContainerInterface $container
      * @param AbstractType $formType
-     * @param AbstractFormFilter $formFilter
+     * @param AbstractFilter $formFilter
      * @param EntityInterface $entity
      **/
-    public function __construct(ContainerInterface $container, AbstractType $formType, AbstractFormFilter $formFilter, EntityInterface $entity)
+    public function __construct(ContainerInterface $container, AbstractType $formType, AbstractFilter $formFilter, EntityInterface $entity)
     {
         $this->container = $container;
         $this->formType = $formType;
@@ -89,15 +89,16 @@ abstract class CrudController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository($this->guesser->getEntityAlias());
-
         $qb = $repo->createQueryBuilder('o')->select('o')->addOrderBy('o.id', 'DESC');
+        $mode = $request->query->get('mode');
+        $filter = strtoupper($request->query->get('filter'));
 
-        if ($request->query->get('filter') && 'basic' === $request->query->get('mode')) {
+        if ($filter && 'basic' === $mode) {
             $qb->andWhere(sprintf('o.%s LIKE :filter', $this->entity->getFilter()))
-                ->setParameter('filter', strtoupper(strtr('%filter%', array('filter' => $request->query->get('filter')))));
+                ->setParameter('filter', strtr('%filter%', array('filter' => $filter)));
         }
 
-        if ('advance' === $request->query->get('mode')) {
+        if ('advance' === $mode) {
 
         }
 
@@ -111,7 +112,12 @@ abstract class CrudController extends Controller
         );
 
         return $this->render(sprintf('%s:%s:list.html.twig', $this->guesser->getBundleAlias(), $this->guesser->getIdentity()),
-            array('data' => $pagination, 'start' => ($page - 1) * Constant::RECORD_PER_PAGE)
+            array(
+                'data' => $pagination,
+                'start' => ($page - 1) * Constant::RECORD_PER_PAGE,
+                'mode' => $mode,
+                'filter' => $filter
+            )
         );
     }
 
