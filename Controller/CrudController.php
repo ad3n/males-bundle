@@ -11,6 +11,7 @@ namespace Ihsan\MalesBundle\Controller;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Ihsan\MalesBundle\IhsanMalesBundle as Constant;
 use Ihsan\MalesBundle\Form\AbstractType;
@@ -127,8 +128,15 @@ abstract class CrudController extends Controller
      **/
     public function showAction($id)
     {
+        $responseFormat = $this->container->getParameter('males.response.type');
+        $data = $this->existOrNotFoundException($id);
+
+        if ('html' !== $responseFormat) {
+            new Response($this->serializer->serialize($data, array(), $responseFormat));
+        }
+
         return $this->render(sprintf('%s:%s:show.html.twig', $this->guesser->getBundleAlias(), $this->guesser->getIdentity()), array(
-            'data' => $this->existOrNotFoundException($id),
+            'data' => $data,
         ));
     }
 
