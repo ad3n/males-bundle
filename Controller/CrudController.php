@@ -71,7 +71,7 @@ abstract class CrudController extends Controller
             $em->flush();
 
             $session = $this->container->get('session');
-            $session->getFlashBag()->set('message.save', $this->get('translator')->trans('message.save', array('data' => $form->getData()->getName()), $this->container->getParameter('bundle')));
+            $session->getFlashBag()->set(Constant::MESSAGE_SAVE, $this->get('translator')->trans(Constant::MESSAGE_SAVE, array('data' => $form->getData()->getName()), $this->container->getParameter('bundle')));
 
             return $this->redirect($this->generateUrl(sprintf('%s_index', strtolower($this->guesser->getIdentity()))));
         }
@@ -144,7 +144,7 @@ abstract class CrudController extends Controller
             $em->flush();
 
             $session = $this->container->get('session');
-            $session->getFlashBag()->set('message.update', $this->get('translator')->trans('message.update', array('data' => $form->getData()->getName()), $this->container->getParameter('bundle')));
+            $session->getFlashBag()->set(Constant::MESSAGE_UPDATE, $this->get('translator')->trans(Constant::MESSAGE_UPDATE, array('data' => $form->getData()->getName()), $this->container->getParameter('bundle')));
 
             return $this->redirect($this->generateUrl(sprintf('%s_index', strtolower($this->guesser->getIdentity()))));
         }
@@ -170,7 +170,7 @@ abstract class CrudController extends Controller
             $em->flush();
 
             $session = $this->container->get('session');
-            $session->getFlashBag()->set('message.delete', $this->get('translator')->trans('message.delete', array('data' => $entity->getName()), $this->container->getParameter('bundle')));
+            $session->getFlashBag()->set(Constant::MESSAGE_DELETE, $this->get('translator')->trans(Constant::MESSAGE_DELETE, array('data' => $entity->getName()), $this->container->getParameter('bundle')));
 
             return $this->redirect($this->generateUrl(sprintf('%s_index', strtolower($this->guesser->getIdentity()))));
         }
