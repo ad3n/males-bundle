@@ -194,6 +194,11 @@ abstract class CrudController extends Controller
         ));
     }
 
+    /**
+     * @param $id
+     * @throws NotFoundHttpException
+     * @return object
+     **/
     protected function existOrNotFoundException($id)
     {
         $em = $this->getDoctrine()->getManager();
@@ -206,6 +211,9 @@ abstract class CrudController extends Controller
         return $entity;
     }
 
+    /**
+     * @return Response
+     **/
     public function filterAction()
     {
         return $this->render(sprintf('%s:%s:filter.html.twig', $this->guesser->getBundleAlias(), $this->guesser->getIdentity()), array(
