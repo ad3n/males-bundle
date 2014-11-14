@@ -19,4 +19,9 @@ interface EntityInterface
      * @return string
      **/
     public function getFilter();
+
+    /**
+     * @return array
+     **/
+    public function getProperties();
 }

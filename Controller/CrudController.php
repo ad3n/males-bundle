@@ -8,6 +8,7 @@
  **/
 namespace Ihsan\MalesBundle\Controller;
 
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -16,7 +17,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Ihsan\MalesBundle\IhsanMalesBundle as Constant;
 use Ihsan\MalesBundle\Form\AbstractType;
 use Ihsan\MalesBundle\Entity\EntityInterface;
-use Ihsan\MalesBundle\Form\AbstractFilter;
 
 abstract class CrudController extends Controller
 {
@@ -24,11 +24,6 @@ abstract class CrudController extends Controller
      * @var AbstractType
      **/
     protected $formType;
-
-    /**
-     * @var AbstractFilter
-     **/
-    protected $formFilter;
 
     /**
      * @var EntityInterface
@@ -43,14 +38,12 @@ abstract class CrudController extends Controller
     /**
      * @param ContainerInterface $container
      * @param AbstractType $formType
-     * @param AbstractFilter $formFilter
      * @param EntityInterface $entity
      **/
-    public function __construct(ContainerInterface $container, AbstractType $formType, AbstractFilter $formFilter, EntityInterface $entity)
+    public function __construct(ContainerInterface $container, AbstractType $formType, EntityInterface $entity)
     {
         $this->container = $container;
         $this->formType = $formType;
-        $this->formFilter = $formFilter;
         $this->guesser = $this->container->get('males.guesser');
         $this->guesser->initialize($this);
         $this->entity = $entity;
@@ -90,6 +83,9 @@ abstract class CrudController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository($this->guesser->getEntityAlias());
+        /**
+         * @var QueryBuilder
+         **/
         $qb = $repo->createQueryBuilder('o')->select('o')->addOrderBy('o.id', 'DESC');
         $mode = $request->query->get('mode');
         $filter = strtoupper($request->query->get('filter'));
@@ -100,7 +96,17 @@ abstract class CrudController extends Controller
         }
 
         if ('advance' === $mode) {
+            $queryString = $request->query->all();
 
+            foreach ($queryString as $key => $query) {
+                if (in_array($key, array_keys($this->entity->getProperties()))) {
+                    try {
+                        $this->hasJoinProperty($key);
+                    } catch (\Exception $e) {
+                        $qb->andWhere(sprintf('o.%s LIKE :%s', $key, $key))->setParameter($key, strtr('%filter%', array('filter' => $query)));
+                    }
+                }
+            }
         }
 
         $page = $request->query->get('page', 1);
@@ -216,8 +222,13 @@ abstract class CrudController extends Controller
      **/
     public function filterAction()
     {
-        return $this->render(sprintf('%s:%s:filter.html.twig', $this->guesser->getBundleAlias(), $this->guesser->getIdentity()), array(
-            'form' => $this->createForm($this->formFilter),
-        ));
+        trigger_error('You must define your own filter action with index as action url and use GET method', E_USER_ERROR);
+    }
+
+    public function hasJoinProperty($property)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        return $em->getClassMetadata($this->guesser->getEntityAlias())->getAssociationMapping($property);
     }
 }

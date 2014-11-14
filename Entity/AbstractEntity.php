@@ -10,8 +10,20 @@ namespace Ihsan\MalesBundle\Entity;
 
 abstract class AbstractEntity implements EntityInterface
 {
+    protected $name;
+
     public function getFilter()
     {
         return 'name';
+    }
+
+    public function getProperties()
+    {
+        return get_object_vars($this);
+    }
+
+    public function __toString()
+    {
+        return $this->name;
     }
 }
