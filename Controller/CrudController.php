@@ -62,6 +62,12 @@ abstract class CrudController extends Controller
             $em = $this->getDoctrine()->getManager();
             $form->handleRequest($request);
 
+            if (! $form->isValid()) {
+                return $this->render(sprintf('%s:%s:new.html.twig', $this->guesser->getBundleAlias(), $this->guesser->getIdentity()), array(
+                    'form' => $form->createView(),
+                ));
+            }
+
             $em->persist($form->getData());
             $em->flush();
 
@@ -147,8 +153,10 @@ abstract class CrudController extends Controller
             $em = $this->getDoctrine()->getManager();
             $form->handleRequest($request);
 
-            $em->persist($form->getData());
-            $em->flush();
+            if ($form->isValid()) {
+                $em->persist($form->getData());
+                $em->flush();
+            }
 
             $session = $this->container->get('session');
             $session->getFlashBag()->set(Constant::MESSAGE_UPDATE, $this->get('translator')->trans(Constant::MESSAGE_UPDATE, array('data' => $form->getData()->getName()), $this->container->getParameter('bundle')));
