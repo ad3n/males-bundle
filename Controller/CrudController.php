@@ -39,13 +39,14 @@ abstract class CrudController extends Controller
      * @param ContainerInterface $container
      * @param AbstractType $formType
      * @param EntityInterface $entity
-     **/
-    public function __construct(ContainerInterface $container, AbstractType $formType, EntityInterface $entity)
+     * @param null $entityClassName
+     */
+    public function __construct(ContainerInterface $container, AbstractType $formType, EntityInterface $entity, $entityClassName = null)
     {
         $this->container = $container;
         $this->formType = $formType;
         $this->guesser = $this->container->get('males.guesser');
-        $this->guesser->initialize($this);
+        $this->guesser->initialize($this, $entityClassName);
         $this->entity = $entity;
     }
 
@@ -201,14 +202,6 @@ abstract class CrudController extends Controller
         }
 
         return $entity;
-    }
-
-    /**
-     * @return Response
-     **/
-    public function filterAction()
-    {
-        trigger_error('You must define your own filter action with index as action url and use GET method', E_USER_ERROR);
     }
 
     public function hasJoinProperty($property)

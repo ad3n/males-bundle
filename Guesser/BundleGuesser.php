@@ -28,11 +28,20 @@ class BundleGuesser implements BundleGuesserInterface
     protected $exclude;
 
     /**
-     * @param Controller $controller
-     * @return $this
+     * @var string
      **/
-    public function initialize(Controller $controller)
+    protected $entityClassName;
+
+    /**
+     * @param Controller $controller
+     * @param null $entityClassName
+     * @return $this
+     */
+    public function initialize(Controller $controller, $entityClassName = null)
     {
+        $entityClassName = explode('\\', $entityClassName);
+        $this->entityClassName = $entityClassName[count($entityClassName) - 1];
+
         $this->reflector = new \ReflectionClass($controller);
         $this->namespace = explode('\\', $this->reflector->getNamespaceName());
         $key = array_search('__CG__', $this->namespace);//if the controller come from cache
@@ -102,7 +111,7 @@ class BundleGuesser implements BundleGuesserInterface
      **/
     public function getEntityAlias()
     {
-        return sprintf('%s:%s', $this->getBundleAlias(), $this->getIdentity());
+        return sprintf('%s:%s', $this->getBundleAlias(), $this->getEntityClassName());
     }
 
     /**
@@ -110,7 +119,7 @@ class BundleGuesser implements BundleGuesserInterface
      **/
     public function getEntityClass()
     {
-        return sprintf('%s\%s', $this->getEntityNamespace(), $this->getIdentity());
+        return sprintf('%s\%s', $this->getEntityNamespace(), $this->getEntityClassName());
     }
 
     /**
@@ -134,7 +143,7 @@ class BundleGuesser implements BundleGuesserInterface
      **/
     public function getRepositoryClass()
     {
-        return sprintf('%s\%sRepository', $this->getEntityNamespace(), $this->getIdentity());
+        return sprintf('%s\%sRepository', $this->getEntityNamespace(), $this->getEntityClassName());
     }
 
     /**
@@ -165,5 +174,14 @@ class BundleGuesser implements BundleGuesserInterface
         } else {
             return $shortName;
         }
+    }
+
+    protected function getEntityClassName()
+    {
+        if ($this->entityClassName) {
+            return $this->entityClassName;
+        }
+
+        return $this->getIdentity();
     }
 }
