@@ -18,12 +18,8 @@ class BoldKeywordFilter extends \Twig_Extension
         );
     }
 
-    public function boldKeyword($string, $keyword, $mode = 'basic')
+    public function boldKeyword($string, $keyword)
     {
-        if ('basic' !== $mode) {
-            return $string;
-        }
-
         return str_replace($keyword, sprintf('<strong>%s</strong>', $keyword), $string);
     }
 

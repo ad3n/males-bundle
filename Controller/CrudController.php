@@ -76,37 +76,24 @@ abstract class CrudController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param bool $upperCaseFilter
      * @return \Symfony\Component\HttpFoundation\Response
-     **/
-    public function indexAction(Request $request)
+     */
+    public function indexAction($upperCaseFilter = true)
     {
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository($this->guesser->getEntityAlias());
+        $request = $this->container->get('request');
+
         /**
          * @var QueryBuilder
          **/
         $qb = $repo->createQueryBuilder('o')->select('o')->addOrderBy('o.id', 'DESC');
-        $mode = $request->query->get('mode');
-        $filter = strtoupper($request->query->get('filter'));
+        $filter = $upperCaseFilter ? strtoupper($request->query->get('filter')) : $request->query->get('filter');
 
-        if ($filter && 'basic' === $mode) {
+        if ($filter) {
             $qb->andWhere(sprintf('o.%s LIKE :filter', $this->entity->getFilter()))
                 ->setParameter('filter', strtr('%filter%', array('filter' => $filter)));
-        }
-
-        if ('advance' === $mode) {
-            $queryString = $request->query->all();
-
-            foreach ($queryString as $key => $query) {
-                if (in_array($key, array_keys($this->entity->getProperties()))) {
-                    try {
-                        $this->hasJoinProperty($key);
-                    } catch (\Exception $e) {
-                        $qb->andWhere(sprintf('o.%s LIKE :%s', $key, $key))->setParameter($key, strtr('%filter%', array('filter' => $query)));
-                    }
-                }
-            }
         }
 
         $page = $request->query->get('page', 1);
@@ -122,8 +109,7 @@ abstract class CrudController extends Controller
             array(
                 'data' => $pagination,
                 'start' => ($page - 1) * Constant::RECORD_PER_PAGE,
-                'mode' => $mode,
-                'filter' => $filter
+                'filter' => $filter,
             )
         );
     }
