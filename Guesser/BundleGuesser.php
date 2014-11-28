@@ -44,7 +44,7 @@ class BundleGuesser implements BundleGuesserInterface
 
         $this->reflector = new \ReflectionClass($controller);
         $this->namespace = explode('\\', $this->reflector->getNamespaceName());
-        $key = array_search('__CG__', $this->namespace);//if the controller come from cache
+        $key = array_search('__CG__', $this->namespace);//if the controller come from jms aop bundle
 
         if ($key) {
             for ($i = $key; $i >= 0; $i--) {

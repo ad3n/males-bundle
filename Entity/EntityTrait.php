@@ -8,15 +8,13 @@
  **/
 namespace Ihsan\MalesBundle\Entity;
 
-interface EntityInterface
+class EntityTrait
 {
     /**
-     * @return string
+     * @return array
      **/
-    public function getName();
-
-    /**
-     * @return string
-     **/
-    public function getFilter();
-}
+    public function getProperties()
+    {
+        return get_object_vars($this);
+    }
+} 
